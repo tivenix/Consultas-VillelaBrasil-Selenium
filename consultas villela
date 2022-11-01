@@ -1,0 +1,64 @@
+import pandas as pd
+import numpy as np
+import selenium
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.wait import WebDriverWait
+import time
+import re
+from bs4 import BeautifulSoup
+
+
+df = pd.read_csv("Consulta_Lista_Devedores_2022_10_31.csv",delimiter=",",header=0)
+df['index'] = range(1, len(df) + 1)
+df.set_index('index',inplace=True)
+df.columns=['CNPJ']
+
+CNPJ = df['CNPJ']
+
+PATH = "C:\Program Files (x86)\chromedriver.exe"
+driver = webdriver.Chrome(PATH)
+driver.get("https://portal.aceleradorvillela.com/")
+login = driver.find_element(By.ID, "input-email")
+login.send_keys("felipe.machado@villelabrasil.com.br")
+password = driver.find_element(By.ID,"input-password")
+password.send_keys("villela2022")
+logbutton = driver.find_element(By.XPATH,"/html/body/ngx-app/nb-auth/nb-layout/div/div/div/div/div/nb-layout-column/nb-card/nb-card-body/nb-auth-block/nb-login/nb-card/nb-card-body/form/button")
+logbutton.click()
+driver.maximize_window()
+try:
+     element = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.XPATH, '/html/body/ngx-app/ngx-pages/ngx-one-column-layout/nb-layout/div/div/div/nb-sidebar/div/div/nb-menu/ul'))
+    )
+finally:
+    time.sleep(3)
+
+regularize = driver.find_element(By.PARTIAL_LINK_TEXT, 'Funil')    
+regularize.click()
+
+consultas = driver.find_element(By.XPATH, '/html/body/ngx-app/ngx-pages/ngx-one-column-layout/nb-layout/div/div/div/div/div/nb-layout-column/ngx-listar-regularize/div/div/nb-tabset/ul/li[3]')
+consultas.click()
+searchbutton = driver.find_element(By.XPATH,'/html/body/ngx-app/ngx-pages/ngx-one-column-layout/nb-layout/div/div/div/div/div/nb-layout-column/ngx-listar-regularize/div/div/nb-tabset/nb-tab[3]/nb-card/nb-card-body/nb-tabset/nb-tab[1]/div/div/div[2]/button')
+searchcnpj = driver.find_element(By.XPATH,'/html/body/ngx-app/ngx-pages/ngx-one-column-layout/nb-layout/div/div/div/div/div/nb-layout-column/ngx-listar-regularize/div/div/nb-tabset/nb-tab[3]/nb-card/nb-card-body/nb-tabset/nb-tab[1]/div/div/div[1]/input')
+
+time.sleep(2)
+x = 0
+src = driver.page_source
+soup = BeautifulSoup(src, 'lxml')
+Name = soup.find('/html/body/ngx-app/ngx-pages/ngx-one-column-layout/nb-layout/div/div/div/div/div/nb-layout-column/ngx-listar-regularize/div/div/nb-tabset/nb-tab[3]/nb-card/nb-card-body/nb-tabset/nb-tab[1]/div[2]/div/h5')
+table = soup.find_all('table')
+for x in range(1,len(CNPJ)):
+    searchcnpj.send_keys(CNPJ[x])
+    searchbutton.click()
+    searchcnpj.clear()
+    if "Deferido e Consolidado" in table:
+        print(Name.title(),df," Deferido e Consolidado")
+    #elif: erro consulta //*[@id="cdk-overlay-0"]/nb-toastr-container/nb-toast[1]
+    else: 
+        time.sleep(1)
+        searchcnpj.send_keys(CNPJ[x + 1])
+        searchbutton.click()
+        searchcnpj.clear()
