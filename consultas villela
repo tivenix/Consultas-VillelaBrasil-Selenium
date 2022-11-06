@@ -30,7 +30,7 @@ logbutton = driver.find_element(By.XPATH,"/html/body/ngx-app/nb-auth/nb-layout/d
 logbutton.click()
 driver.maximize_window()
 try:
-     element = WebDriverWait(driver, 10).until(
+    WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.XPATH, '/html/body/ngx-app/ngx-pages/ngx-one-column-layout/nb-layout/div/div/div/nb-sidebar/div/div/nb-menu/ul'))
     )
 finally:
@@ -45,18 +45,20 @@ searchbutton = driver.find_element(By.XPATH,'/html/body/ngx-app/ngx-pages/ngx-on
 searchcnpj = driver.find_element(By.XPATH,'/html/body/ngx-app/ngx-pages/ngx-one-column-layout/nb-layout/div/div/div/div/div/nb-layout-column/ngx-listar-regularize/div/div/nb-tabset/nb-tab[3]/nb-card/nb-card-body/nb-tabset/nb-tab[1]/div/div/div[1]/input')
 
 time.sleep(2)
+soup = BeautifulSoup(src, 'lxml')
+#toast = soup.find('nb-toast',{'class':'ng-tns-c37-71 ng-trigger ng-trigger-fadeIn status-danger destroy-by-click has-icon custom-icon ng-star-inserted'})
 x = 0
 src = driver.page_source
-soup = BeautifulSoup(src, 'lxml')
+alert = driver.find_element(By.XPATH,'/html/body/ngx-app/ngx-pages/ngx-one-column-layout/nb-layout/div/div/div/div/div/nb-layout-column/ngx-listar-regularize/div/div/nb-tabset/nb-tab[3]/nb-card/nb-card-body/nb-tabset/nb-tab[1]/nb-alert')
+
 Name = soup.find('/html/body/ngx-app/ngx-pages/ngx-one-column-layout/nb-layout/div/div/div/div/div/nb-layout-column/ngx-listar-regularize/div/div/nb-tabset/nb-tab[3]/nb-card/nb-card-body/nb-tabset/nb-tab[1]/div[2]/div/h5')
 table = soup.find_all('table')
 for x in range(1,len(CNPJ)):
     searchcnpj.send_keys(CNPJ[x])
     searchbutton.click()
     searchcnpj.clear()
-    if "Deferido e Consolidado" in table:
-        print(Name.title(),df," Deferido e Consolidado")
-    #elif: erro consulta //*[@id="cdk-overlay-0"]/nb-toastr-container/nb-toast[1]
+    if alert.is_displayed():
+        print(CNPJ[x],"cliente")
     else: 
         time.sleep(1)
         searchcnpj.send_keys(CNPJ[x + 1])
