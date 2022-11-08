@@ -16,12 +16,15 @@ import time
 import re
 from bs4 import BeautifulSoup
 
+##pd.read_csv or pd.read_excel("file name.xxx"),header=0)
+
 
 df = pd.read_excel("lista 3.xlsx",header=0)
-df['index'] = range(1, len(df) + 1)
-df.set_index('index',inplace=True)
-df.columns=['CNPJ'] 
-CNPJ = df['CNPJ']
+df['index'] = range(1, len(df) + 1)## criando index
+
+df.set_index('index',inplace=True)#indexing
+df.columns=['CNPJ'] #criando tabela nova
+CNPJ = df['CNPJ'] 
 
 PATH = "C:\Program Files (x86)\chromedriver.exe"
 driver = webdriver.Chrome(PATH)
@@ -52,29 +55,26 @@ searchcnpj = driver.find_element(By.XPATH,'/html/body/ngx-app/ngx-pages/ngx-one-
 src = driver.page_source
 soup = BeautifulSoup(src, 'lxml')
 time.sleep(2)
-toast = soup.find('nb-toast',{'class':'ng-tns-c37-71 ng-trigger ng-trigger-fadeIn status-danger destroy-by-click has-icon custom-icon ng-star-inserted'})
 x = 0
-#y = 9000
 
-toast3 = soup.find('cdk-overlay-0')
+
 alert = driver.find_element(By.XPATH,'/html/body/ngx-app/ngx-pages/ngx-one-column-layout/nb-layout/div/div/div/div/div/nb-layout-column/ngx-listar-regularize/div/div/nb-tabset/nb-tab[3]/nb-card/nb-card-body/nb-tabset/nb-tab[1]/nb-alert')
-teste= soup.find('div',{'class':'ng-tns-c37-71 ng-trigger ng-trigger-fadeIn status-danger destroy-by-click has-icon custom-icon ng-star-inserted'})
 lista = []
 for x in range(1,25):
     searchcnpj.send_keys(CNPJ[x])
-    #WebDriverWait(driver,10).until(EC.visibility_of_element_located(searchbutton))
     WebDriverWait(driver,10).until(EC.element_to_be_clickable(searchbutton))    
-   
     try:
         searchbutton.click()
     except ElementClickInterceptedException:
+
         pass
+
     searchcnpj.clear()
+
     if alert.is_displayed():
         print(CNPJ[x]," cliente")
-        #CNPJ.drop[x]
+       
     else:
-        #pd.Series.to_excel(sheet_name='teste',)
         print(CNPJ[x],' Não é cliente')
     
 else: 
@@ -90,3 +90,4 @@ else:
 searchcnpj.send_keys(CNPJ[x + 1])
 searchbutton.click()
 searchcnpj.clear()
+
