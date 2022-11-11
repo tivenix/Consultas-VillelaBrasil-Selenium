@@ -2,7 +2,7 @@
 Consultas VILLELABRASIL
 
 
-Script a base de Selenium, BeautifulSoup4 e Pandas
+Script em Python a base de Selenium, BeautifulSoup4 e Pandas
 
 
 Verifica CNPJ automaticamente
