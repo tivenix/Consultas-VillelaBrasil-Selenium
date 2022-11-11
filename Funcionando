@@ -1,4 +1,4 @@
-##Import Bibliotecas
+    ##Import Bibliotecas
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver import Chrome
@@ -69,7 +69,9 @@ time.sleep(2)
 x = 0
 
 alert = driver.find_element(By.XPATH,'/html/body/ngx-app/ngx-pages/ngx-one-column-layout/nb-layout/div/div/div/div/div/nb-layout-column/ngx-listar-regularize/div/div/nb-tabset/nb-tab[3]/nb-card/nb-card-body/nb-tabset/nb-tab[1]/nb-alert')
-    #loop para verificação de CNPJ
+   
+   #loop para verificação de CNPJ
+    
 for x in range(1,len(CNPJ)):
     searchcnpj.send_keys(CNPJ[x])
     WebDriverWait(driver,10).until(EC.element_to_be_clickable(searchbutton))    
